@@ -59,7 +59,7 @@ pipeline {
                 echo "\n########## UPLOAD WAR FILE O NEXUS #########\n"
                 script{
                     def readPomVersion = readMavenPom file: 'pom.xml'
-                    def nexusRepo = readPomVersion.version.endWith("SNAPSHOT")?"demoapp-snapshot":"demoapp-release"
+                    def nexusRepo = readPomVersion.version.endsWith("SNAPSHOT")?"demoapp-snapshot":"demoapp-release"
                     nexusArtifactUploader artifacts: 
                     [
                         [
