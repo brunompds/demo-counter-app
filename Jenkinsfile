@@ -4,28 +4,40 @@ pipeline {
         maven 'Maven3.6.3'
     }
     stages{
-        stage('Git Checkout'){
+        stage('CLEAN WORKSPACE'){
             steps{
+                echo "\n############# CLEAN WORKSPACE #############\n"
+                cleanWs()
+            }
+        }
+        stage('GIT CHECKOUT'){
+            steps{
+                echo "\n############## GIT CHECKOUT ###############\n"
                 git branch: 'main', url: 'https://github.com/brunompds/demo-counter-app.git'
             }
         }
-        stage('UNIT testing'){
+        stage('UNIT TESTING'){
             steps{
+                echo "\n############## UNIT TESTING ###############\n"
                 sh 'mvn test'
             }
         }
-        stage('Integration testing'){
+        stage('INTEGRATION TESTING'){
             steps{
+                echo "\n########### INTEGRATION TESTING ###########\n"
                 sh 'mvn verify -DskipUnitTests'
             }
         }
-        stage('Maven Build'){
+        stage('MAVEN BUILD'){
             steps{
+                echo "\n############### MAVEN BUILD ###############\n"
                 sh 'mvn clean install'
             }
         }
-        stage('SonarQube analysis'){
+        /*
+        stage('SONARQUBE ANALYSIS'){
             steps{
+                echo "\n############ SONARQUBE ANALYSIS ############\n"
                 script{
                     withSonarQubeEnv(installationName: 'sonarserver', credentialsId: 'sonar-api') {
                         sh 'mvn clean package sonar:sonar'
@@ -33,17 +45,19 @@ pipeline {
                 }
             }
         }
-        stage('Quality Gate status'){
+        stage('QUALITY GATE STATUS'){
             steps{
+                echo "\n############ QUALITY GATE STATUS ###########\n"
                 script{
                     waitForQualityGate abortPipeline: false, credentialsId: 'sonar-api'
                 }
             }
         }
-        stage('Upload war fileto nexus'){
+        */
+        stage('UPLOAD WAR FILE O NEXUS'){
             steps{
+                echo "\n########## UPLOAD WAR FILE O NEXUS #########\n"
                 script{
-
                     def readPomVersion = readMavenPom file: 'pom.xml'
                     def nexusRepo = readPomVersion.version.endWith("SNAPSHOT")?"demoapp-snapshot":"demoapp-release"
                     nexusArtifactUploader artifacts: 
