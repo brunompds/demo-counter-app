@@ -20,6 +20,7 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/brunompds/demo-counter-app.git'
             }
         }
+        /*
         stage('UNIT TESTING'){
             steps{
                 echo "\n############## UNIT TESTING ###############\n"
@@ -32,6 +33,7 @@ pipeline {
                 sh 'mvn verify -DskipUnitTests'
             }
         }
+        */
         stage('MAVEN BUILD'){
             steps{
                 echo "\n############### MAVEN BUILD ###############\n"
@@ -86,11 +88,23 @@ pipeline {
         }
         stage('DOCKER IMAGE BUILD'){
             steps{
-                echo "\n############ DOCKER IMAGE BUILD' ###########\n"
+                echo "\n############ DOCKER IMAGE BUILD ###########\n"
                 script{
                     sh 'docker image build -t $JOB_NAME:v1.$BUILD_ID .'
                     sh 'docker image tag $JOB_NAME:v1.$BUILD_ID brunompds/$JOB_NAME:v1.$BUILD_ID'
                     sh 'docker image tag $JOB_NAME:v1.$BUILD_ID brunompds/$JOB_NAME:latest'
+                }
+            }
+        }
+        stage('PUSH IMAGE TO THE DOCKERHUB'){
+            steps{
+                echo "\n######## PUSH IMAGE TO THE DOCKERHUB #######\n"
+                script{
+                    withCredentials([string(credentialsId: 'dockerHub_pass', variable: 'docker_hub_cred')]) {
+                        sh 'doecker login -u brunompd p ${docker_hub_cred}'
+                        sh 'docker image push brunompds/$JOB_NAME:v1.$BUILD_ID'
+                        sh 'docker image push brunompds/$JOB_NAME:latest'
+                    }
                 }
             }
         }
